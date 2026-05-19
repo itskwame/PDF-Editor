@@ -187,16 +187,16 @@ export default function Home() {
           </Link>
 
           <nav className="hidden items-center gap-10 text-sm font-semibold text-slate-800 md:flex">
-            <Link href="/editor" className="transition hover:text-blue-600">
+            <Link href="/edit" className="transition hover:text-blue-600">
               Edit PDF
             </Link>
-            <Link href="/sign" className="transition hover:text-blue-600">
+            <Link href="/edit?tool=signature" className="transition hover:text-blue-600">
               Sign PDF
             </Link>
             <Link href="/pricing" className="transition hover:text-blue-600">
               Pricing
             </Link>
-            <Link href="/faq" className="transition hover:text-blue-600">
+            <Link href="/#faq" className="transition hover:text-blue-600">
               FAQ
             </Link>
           </nav>
@@ -209,7 +209,7 @@ export default function Home() {
               Login
             </Link>
             <Link
-              href="/editor"
+              href="/edit"
               className="rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:from-blue-700 hover:to-violet-700 focus:outline-none focus:ring-4 focus:ring-blue-200"
             >
               Edit PDF Free
@@ -259,7 +259,7 @@ export default function Home() {
                 Drag and drop your PDF here
               </h2>
               <Link
-                href="/editor"
+                href="/edit"
                 className="mt-6 inline-flex min-w-72 justify-center rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-blue-600/25 transition hover:from-blue-700 hover:to-violet-700 focus:outline-none focus:ring-4 focus:ring-blue-200"
               >
                 Choose PDF File
@@ -387,7 +387,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-8 lg:px-8">
+      <section id="faq" className="scroll-mt-24 mx-auto max-w-6xl px-5 py-8 lg:px-8">
         <h2 className="text-center text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
           Common Questions
         </h2>
@@ -418,7 +418,7 @@ export default function Home() {
             Ready to edit your PDF?
           </h2>
           <Link
-            href="/editor"
+            href="/edit"
             className="mt-6 inline-flex items-center gap-3 rounded-lg bg-white px-10 py-4 text-base font-black text-blue-700 shadow-lg shadow-blue-950/20 transition hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-white/50"
           >
             <Icon name="upload" className="h-5 w-5" />
