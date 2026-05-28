@@ -87,7 +87,7 @@ const features: { title: string; icon: IconName; color: string }[] = [
 
 const trustItems: { title: string; icon: IconName; color: string }[] = [
   { title: "No watermark", icon: "checkbox", color: "text-blue-600" },
-  { title: "Secure uploads", icon: "lock", color: "text-green-600" },
+  { title: "Browser-based editing", icon: "lock", color: "text-green-600" },
   { title: "3 free PDFs/month", icon: "gift", color: "text-violet-600" },
   { title: "No install needed", icon: "bolt", color: "text-orange-500" },
 ];
@@ -100,26 +100,26 @@ const steps: { title: string; icon: IconName }[] = [
 
 const securityItems: { title: string; copy: string; icon: IconName; color: string }[] = [
   {
-    title: "Private files",
-    copy: "Your files are private and visible only to you.",
+    title: "MVP browser processing",
+    copy: "PDF files are opened and edited in your browser during the MVP.",
     icon: "shield",
     color: "text-blue-600",
   },
   {
-    title: "Secure temporary links",
-    copy: "Links to your files are encrypted and time-limited.",
+    title: "No cloud file storage yet",
+    copy: "We do not store uploaded PDFs on the server for this MVP flow.",
     icon: "link",
     color: "text-green-600",
   },
   {
-    title: "Account-based access",
-    copy: "Your files are tied to your account for easy access.",
+    title: "Account-based exports",
+    copy: "An account is required before export so monthly limits can be enforced.",
     icon: "user",
     color: "text-violet-600",
   },
   {
-    title: "Automatic file deletion for free users",
-    copy: "We automatically delete your files after a short time.",
+    title: "Server-side usage checks",
+    copy: "Completed PDF exports count against your monthly plan limit.",
     icon: "trash",
     color: "text-orange-600",
   },
@@ -142,8 +142,8 @@ const pricingPlans = [
     suffix: "/month",
     items: [
       "25 completed PDF downloads/month",
-      "Longer storage",
-      "Saved signatures and templates later",
+      "10 AI actions/month when AI launches",
+      "AI tools marked coming soon for MVP",
     ],
     featured: true,
   },
@@ -151,7 +151,7 @@ const pricingPlans = [
     name: "Pro",
     price: "$19",
     suffix: "/month",
-    items: ["Unlimited downloads", "Advanced tools", "Business workflows later"],
+    items: ["100 completed PDF downloads/month", "100 AI actions/month when AI launches", "AI tools marked coming soon for MVP"],
   },
 ];
 
@@ -265,8 +265,8 @@ export default function Home() {
                 Choose PDF File
               </Link>
               <p className="mt-5 max-w-sm text-base leading-7 text-slate-500">
-                PDF files only for MVP. Free users get 3 completed downloads per
-                month.
+                PDF files are processed in your browser for MVP. Free users get
+                3 completed exports per month.
               </p>
             </div>
           </div>
@@ -330,7 +330,7 @@ export default function Home() {
 
       <section className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
         <h2 className="text-center text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-          Built for Private, Secure PDF Editing
+          Built for Browser-Based PDF Editing
         </h2>
         <div className="mt-6 grid gap-5 lg:grid-cols-4">
           {securityItems.map((item) => (

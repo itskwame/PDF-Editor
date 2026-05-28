@@ -1,10 +1,9 @@
 import { PDFDocument, StandardFonts, degrees, rgb } from 'pdf-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
+import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from '../src/lib/supabaseBrowser'
 
 const MAX_FREE_DOWNLOADS = 3
-const MONTH_KEY = new Date().toISOString().slice(0, 7)
-const USAGE_KEY = `freepdfflow-downloads-${MONTH_KEY}`
 const DRAFT_KEY = 'freepdfflow-local-draft'
 const TOOL_LABELS = ['Text', 'Signature', 'Date', 'Checkbox', 'Highlight', 'Shape', 'Image', 'Draw']
 const SCALE = 1.35
@@ -14,15 +13,6 @@ const FONT_OPTIONS = [
   { label: 'Courier', value: 'Courier' },
 ]
 const ALIGN_OPTIONS = ['left', 'center', 'right']
-
-function readUsage() {
-  if (typeof window === 'undefined') return 0
-  return Number(window.localStorage.getItem(USAGE_KEY) || 0)
-}
-
-function saveUsage(count) {
-  window.localStorage.setItem(USAGE_KEY, String(count))
-}
 
 function downloadBlob(blob, fileName) {
   const url = URL.createObjectURL(blob)
@@ -123,21 +113,65 @@ export default function Edit() {
   const [selectedId, setSelectedId] = useState(null)
   const [pendingImage, setPendingImage] = useState(null)
   const [imageReplaceTarget, setImageReplaceTarget] = useState(null)
-  const [usage, setUsage] = useState(0)
+  const [accountSummary, setAccountSummary] = useState(null)
+  const [authReady, setAuthReady] = useState(false)
   const [status, setStatus] = useState('Upload a PDF to begin editing.')
   const [isExporting, setIsExporting] = useState(false)
   const [draft, setDraft] = useState(null)
   const [lastSaved, setLastSaved] = useState(null)
 
-  const downloadsLeft = Math.max(MAX_FREE_DOWNLOADS - usage, 0)
+  const downloadsLeft = accountSummary?.exports?.remaining ?? 0
+  const exportLimit = accountSummary?.exports?.limit ?? MAX_FREE_DOWNLOADS
+  const exportUsed = accountSummary?.exports?.used ?? 0
   const selected = useMemo(
     () => annotations.find((annotation) => annotation.id === selectedId),
     [annotations, selectedId],
   )
 
+  async function getAuthToken() {
+    const supabase = getSupabaseBrowserClient()
+
+    if (!supabase) return null
+
+    const { data } = await supabase.auth.getSession()
+    return data.session?.access_token || null
+  }
+
+  async function refreshAccountSummary() {
+    setAuthReady(false)
+
+    if (!isSupabaseBrowserConfigured()) {
+      setAuthReady(true)
+      return null
+    }
+
+    const token = await getAuthToken()
+
+    if (!token) {
+      setAccountSummary(null)
+      setAuthReady(true)
+      return null
+    }
+
+    const response = await fetch('/api/account/summary', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const payload = await response.json()
+
+    if (response.ok) {
+      setAccountSummary(payload)
+    }
+
+    setAuthReady(true)
+    return response.ok ? payload : null
+  }
+
   useEffect(() => {
-    setUsage(readUsage())
     setDraft(readDraftSummary())
+    refreshAccountSummary()
     import('pdfjs-dist/legacy/build/pdf.mjs').then((module) => {
       module.GlobalWorkerOptions.workerSrc = ''
       setPdfjs(module)
@@ -603,8 +637,15 @@ export default function Edit() {
       return
     }
 
-    if (downloadsLeft <= 0) {
-      setStatus('You have used your 3 free PDF downloads this month. Upgrade to keep downloading today.')
+    if (!isSupabaseBrowserConfigured()) {
+      setStatus('Account export checks are not configured. Add Supabase environment variables before launching.')
+      return
+    }
+
+    const token = await getAuthToken()
+
+    if (!token) {
+      router.push('/login?next=/edit')
       return
     }
 
@@ -733,11 +774,42 @@ export default function Edit() {
       }
 
       const bytes = await outputPdf.save()
+      setStatus('Checking monthly export limit...')
+
+      const authorizationResponse = await fetch('/api/exports/authorize', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fileName }),
+      })
+      const authorization = await authorizationResponse.json()
+
+      if (!authorizationResponse.ok || !authorization.allowed) {
+        setStatus(
+          authorization.error ||
+            `You have used your ${authorization.limit || exportLimit} PDF exports this month. Upgrade to keep downloading today.`,
+        )
+        await refreshAccountSummary()
+        return
+      }
+
       downloadBlob(new Blob([bytes], { type: 'application/pdf' }), fileName)
-      const nextUsage = usage + 1
-      saveUsage(nextUsage)
-      setUsage(nextUsage)
-      setStatus(`Export complete. Free downloads left: ${Math.max(MAX_FREE_DOWNLOADS - nextUsage, 0)} of 3.`)
+      setAccountSummary((current) =>
+        current
+          ? {
+              ...current,
+              plan: authorization.plan,
+              exports: {
+                used: authorization.used,
+                limit: authorization.limit,
+                remaining: authorization.remaining,
+              },
+            }
+          : current,
+      )
+      setStatus(`Export complete. PDF exports left this month: ${authorization.remaining} of ${authorization.limit}.`)
     } catch (error) {
       setStatus(`Export failed: ${error.message}`)
     } finally {
@@ -913,13 +985,17 @@ export default function Edit() {
             Redo
           </button>
           <span style={{ color: downloadsLeft ? '#166534' : '#b91c1c', fontWeight: 800 }}>
-            Free downloads left: {downloadsLeft} of 3
+            {accountSummary
+              ? `PDF exports left: ${downloadsLeft} of ${exportLimit}`
+              : authReady
+                ? 'Login required to export'
+                : 'Checking account...'}
           </span>
           <button
             onClick={exportPdf}
             disabled={!pdfBytes || isExporting}
             style={{
-              background: !pdfBytes ? '#94a3b8' : downloadsLeft <= 0 ? '#b91c1c' : '#2563eb',
+              background: !pdfBytes ? '#94a3b8' : downloadsLeft <= 0 && accountSummary ? '#b91c1c' : '#2563eb',
               border: 0,
               borderRadius: 8,
               color: '#fff',
@@ -1367,7 +1443,8 @@ export default function Edit() {
 
           <hr style={{ border: 0, borderTop: '1px solid #e2e8f0', margin: '22px 0' }} />
           <p style={{ color: '#475569', lineHeight: 1.6 }}>
-            Usage count is local for this browser and increments only after a successful PDF export.
+            PDF editing happens in this browser during the MVP. Export counts are checked against your signed-in account before each download.
+            {accountSummary ? ` You have used ${exportUsed} of ${exportLimit} PDF exports this month.` : ''}
           </p>
         </aside>
       </div>
