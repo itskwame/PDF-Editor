@@ -138,10 +138,10 @@ const pricingRows = [
 ];
 
 const sampleBooks = [
-  ["THE FOCUS EDGE", "How Clarity Creates Extraordinary Results", "DAVID LANGFORD", "Nonfiction", "from-[#111111] via-[#252525] to-[#050505]"],
-  ["WHISPERS OF THE MOON", "LILA HART", "", "Fiction", "from-[#0d1729] via-[#253553] to-[#111827]"],
-  ["A Life Unfolded", "Lessons, Choices, and the Road That Led Me Home", "ANNA REEVES", "Memoir", "from-[#efe2d0] via-[#f7eddf] to-[#c69a68]"],
-  ["The Brave Little Star", "", "", "Children's", "from-[#1f64a5] via-[#2b8bc1] to-[#f4b642]"],
+  ["THE FOCUS EDGE", "How Clarity Creates Extraordinary Results", "DAVID LANGFORD", "Nonfiction", "cover-horizon"],
+  ["WHISPERS OF THE MOON", "LILA HART", "", "Fiction", "cover-moon"],
+  ["A Life Unfolded", "Lessons, Choices, and the Road That Led Me Home", "ANNA REEVES", "Memoir", "cover-memoir"],
+  ["The Brave Little Star", "", "", "Children's", "cover-child"],
 ];
 
 const faqs = [
@@ -214,7 +214,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function Card({ children, className = "", id }: { children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <div id={id} className={`rounded-lg border border-[#e8ddca] bg-white p-4 shadow-sm shadow-[#d8c5a6]/25 ${className}`}>
+    <div id={id} className={`bookforge-soft-card rounded-lg border border-[#e8ddca] p-4 ${className}`}>
       {children}
     </div>
   );
@@ -222,8 +222,12 @@ function Card({ children, className = "", id }: { children: React.ReactNode; cla
 
 function IconBubble({ icon, className = "" }: { icon: IconName; className?: string }) {
   return (
-    <span className={`flex shrink-0 items-center justify-center rounded-full bg-[#f5deb7] text-[#0d2a4a] ${className || "h-16 w-16"}`}>
-      <Icon name={icon} className="h-8 w-8" />
+    <span className={`flex shrink-0 items-center justify-center rounded-full bg-[#f7dfb8] text-[#0d2a4a] shadow-inner shadow-white/70 ring-1 ring-[#e4c58e] ${className || "h-16 w-16"}`}>
+      {icon === "spark" ? (
+        <span className="text-5xl font-black leading-none text-[#0d2a4a] [font-family:Georgia,serif]">?</span>
+      ) : (
+        <Icon name={icon} className="h-8 w-8" />
+      )}
     </span>
   );
 }
@@ -271,9 +275,9 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="bookforge-frame bookforge-hero pb-8 pt-7">
+      <section className="bookforge-frame bookforge-hero pb-9 pt-8">
         <div>
-          <h1 className="max-w-[620px] text-[48px] font-black leading-[1.02] text-[#0a2a4b] [font-family:Georgia,serif] md:text-[55px] lg:text-[58px]">
+          <h1 className="max-w-[645px] text-[50px] font-black leading-[1.03] text-[#0a2a4b] [font-family:Georgia,serif] md:text-[57px] lg:text-[61px]">
             Turn Your Idea, Notes, or Draft Into a Finished Book
           </h1>
           <p className="mt-5 max-w-[560px] text-[18px] font-medium leading-[1.45] text-[#102b49]">
@@ -330,7 +334,9 @@ export default function Home() {
           <div className="grid gap-4 md:grid-cols-4">
             {bookTypes.map(([title, copy, icon]) => (
               <Card className="flex min-h-[92px] items-center gap-4" key={title}>
-                <Icon name={icon as IconName} className={`h-12 w-12 shrink-0 ${title === "Memoir or Life Story" ? "fill-[#d83b2e] text-[#d83b2e]" : "text-[#0d2a4a]"}`} />
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white text-[#0d2a4a] shadow-sm ring-1 ring-[#eadfcd]">
+                  <Icon name={icon as IconName} className={`h-9 w-9 ${title === "Memoir or Life Story" ? "fill-[#d83b2e] text-[#d83b2e]" : title === "Children's Book" ? "text-[#2f80b7]" : "text-[#0d2a4a]"}`} />
+                </span>
                 <div>
                   <h3 className="text-[16px] font-black leading-tight text-[#0d2a4a] [font-family:Georgia,serif]">{title}</h3>
                   <p className="mt-1 text-[12px] font-semibold leading-[1.45] text-[#263b53]">{copy}</p>
@@ -461,13 +467,17 @@ export default function Home() {
         <Card id="examples">
           <h2 className="text-center text-[27px] font-black text-[#0d2a4a] [font-family:Georgia,serif]">Sample Books</h2>
           <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {sampleBooks.map(([title, subtitle, author, label, gradient]) => (
+            {sampleBooks.map(([title, subtitle, author, label, gradient], index) => (
               <div className="rounded-lg bg-white p-2 shadow-sm" key={title}>
-                <div className={`flex aspect-[2/3] flex-col justify-between rounded-md bg-gradient-to-br ${gradient} p-5 text-center text-white shadow-lg`}>
-                  <p className="mt-4 text-[24px] font-black leading-tight tracking-wide text-[#f7d38b]">{title}</p>
+                <div className={`sample-cover flex aspect-[2/3] flex-col justify-between ${gradient} p-5 text-center text-white`}>
+                  {index === 1 ? <span className="absolute left-1/2 top-[40%] h-12 w-12 -translate-x-1/2 rounded-full bg-[#f6dfb6] shadow-[0_0_24px_rgba(246,223,182,0.65)]" /> : null}
+                  {index === 3 ? <span className="absolute right-5 top-5 text-4xl text-[#ffd86d]">★</span> : null}
+                  <p className={`relative z-10 mt-4 text-[24px] font-black leading-tight tracking-wide ${index === 2 ? "text-[#8f673c]" : "text-[#f7d38b]"}`}>
+                    {title}
+                  </p>
                   <div>
-                    {subtitle ? <p className="text-[10px] font-semibold leading-tight text-white/85">{subtitle}</p> : null}
-                    {author ? <p className="mt-3 text-[10px] font-black tracking-widest text-white/85">{author}</p> : null}
+                    {subtitle ? <p className={`relative z-10 text-[10px] font-semibold leading-tight ${index === 2 ? "text-[#7a5a36]" : "text-white/85"}`}>{subtitle}</p> : null}
+                    {author ? <p className={`relative z-10 mt-3 text-[10px] font-black tracking-widest ${index === 2 ? "text-[#7a5a36]" : "text-white/85"}`}>{author}</p> : null}
                   </div>
                 </div>
                 <p className="mt-2 text-center text-sm font-bold text-[#263b53]">{label}</p>
@@ -559,16 +569,13 @@ function HeroMockup() {
       <div>
         <p className="mb-4 text-center text-sm font-black text-[#0d2a4a]">3. Finished Book</p>
         <div className="grid grid-cols-[210px_96px] gap-7">
-          <div className="relative mx-auto h-[286px] w-[186px] rounded-sm bg-gradient-to-br from-[#0b223c] via-[#163b61] to-[#081524] p-5 text-center text-white shadow-2xl shadow-slate-900/30">
-            <div className="absolute -right-2 top-2 h-[274px] w-3 rounded-r-sm bg-[#d5c4ad]" />
-            <div className="absolute -right-4 top-4 h-[266px] w-2 rounded-r-sm bg-[#f3eadb]" />
-            <div className="mt-5 h-20 rounded-full bg-[#f0bd64]/30 blur-lg" />
-            <p className="-mt-14 text-[26px] font-black leading-tight text-[#f8df9a]">BEYOND THE HORIZON</p>
-            <p className="mx-auto mt-4 max-w-[130px] text-[9px] font-semibold uppercase tracking-[0.14em] text-white/80">
+          <div className="bookforge-cover cover-horizon relative mx-auto h-[286px] w-[186px] p-5 text-center text-white">
+            <p className="relative z-10 mt-7 text-[27px] font-black leading-tight text-[#f8df9a]">BEYOND THE HORIZON</p>
+            <p className="relative z-10 mx-auto mt-4 max-w-[130px] text-[9px] font-semibold uppercase tracking-[0.14em] text-white/80">
               A journey of purpose and possibility
             </p>
-            <div className="mt-10 h-16 rounded-t-full bg-gradient-to-t from-[#071524] to-[#e8b25d]" />
-            <p className="mt-9 text-[12px] font-black tracking-[0.18em] text-[#f8df9a]">JAMES MORGAN</p>
+            <div className="cover-mountains" />
+            <p className="absolute bottom-5 left-0 right-0 z-10 text-[12px] font-black tracking-[0.18em] text-[#f8df9a]">JAMES MORGAN</p>
           </div>
           <div className="grid content-center gap-5">
             <ExportTile badge="PDF" label="Export PDF" tone="red" />
