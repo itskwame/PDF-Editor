@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FreePDFFlow | Edit PDFs Online for Free",
+  title: "BookForge | Turn Your Idea Into a Finished Book",
   description:
-    "Add text, signatures, dates, checkboxes, images, highlights, and more. Download 3 finished PDFs every month for free.",
+    "Plan, write, edit, format, and export your book with a guided step-by-step process.",
 };
 
 export default function RootLayout({

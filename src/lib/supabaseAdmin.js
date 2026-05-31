@@ -23,21 +23,3 @@ export function getSupabaseAdminClient() {
     },
   )
 }
-
-export async function getUserFromRequest(req) {
-  const authHeader = req.headers.authorization || ''
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
-
-  if (!token) {
-    return { user: null, error: 'Missing bearer token.' }
-  }
-
-  const supabase = getSupabaseAdminClient()
-  const { data, error } = await supabase.auth.getUser(token)
-
-  if (error || !data?.user) {
-    return { user: null, error: 'Invalid or expired session.' }
-  }
-
-  return { user: data.user, error: null, supabase }
-}

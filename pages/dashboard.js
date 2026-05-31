@@ -19,7 +19,7 @@ export default function Dashboard() {
     const token = data.session?.access_token
 
     if (!token) {
-      setStatus('Please sign in to view your dashboard.')
+      window.location.href = '/login?next=/dashboard'
       return
     }
 

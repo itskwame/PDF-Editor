@@ -1,5 +1,5 @@
 import { getCurrentMonthKey } from '../../../src/lib/plans'
-import { getUserFromRequest, isSupabaseAdminConfigured } from '../../../src/lib/supabaseAdmin'
+import { getUserFromRequest, isSupabaseAuthConfigured } from '../../../src/lib/auth'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed.' })
   }
 
-  if (!isSupabaseAdminConfigured()) {
+  if (!isSupabaseAuthConfigured()) {
     return res.status(500).json({ error: 'Supabase is not configured.' })
   }
 
