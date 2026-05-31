@@ -22,7 +22,9 @@ type IconName =
   | "pencil"
   | "download"
   | "spark"
-  | "refresh";
+  | "refresh"
+  | "file"
+  | "shield";
 
 const iconPaths: Record<IconName, string[]> = {
   quill: ["M19 3C12 4 7 9 5 18", "M17 5c-5 1-8 4-10 9", "M4 21l4-7"],
@@ -47,71 +49,9 @@ const iconPaths: Record<IconName, string[]> = {
   download: ["M12 4v11", "M7 10l5 5 5-5", "M5 20h14"],
   spark: ["M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"],
   refresh: ["M20 7v5h-5", "M4 17v-5h5", "M18 12a6 6 0 0 0-10-4", "M6 12a6 6 0 0 0 10 4"],
+  file: ["M6 3h9l3 3v15H6z", "M14 3v4h4", "M9 12h6", "M9 16h4"],
+  shield: ["M12 3l7 3v5c0 5-3 9-7 10-4-1-7-5-7-10V6z", "M9 12l2 2 4-5"],
 };
-
-function Icon({ name, className = "" }: { name: IconName; className?: string }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      {iconPaths[name].map((path) => (
-        <path d={path} key={path} />
-      ))}
-    </svg>
-  );
-}
-
-function Logo() {
-  return (
-    <Link href="/" className="flex items-center gap-2 text-2xl font-black text-[#0d2a4a]">
-      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f8ead2] text-[#c98214]">
-        <Icon name="quill" className="h-5 w-5" />
-      </span>
-      BookForge
-    </Link>
-  );
-}
-
-function GoldButton({ href, children, className = "" }: { href: string; children: React.ReactNode; className?: string }) {
-  return (
-    <Link
-      href={href}
-      className={`inline-flex items-center justify-center rounded-lg bg-[#c98214] px-5 py-3 text-sm font-black text-white shadow-lg shadow-amber-900/15 transition hover:bg-[#a9670e] ${className}`}
-    >
-      {children}
-    </Link>
-  );
-}
-
-function SecondaryButton({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex items-center justify-center rounded-lg border border-[#e6d9c3] bg-white px-5 py-3 text-sm font-black text-[#0d2a4a] shadow-sm transition hover:border-[#c98214]"
-    >
-      {children}
-    </Link>
-  );
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-3xl font-black leading-tight text-[#0d2a4a] md:text-4xl">{children}</h2>;
-}
-
-function Card({ children, className = "", id }: { children: React.ReactNode; className?: string; id?: string }) {
-  return (
-    <div id={id} className={`rounded-xl border border-[#eadfcd] bg-white/90 p-5 shadow-sm shadow-[#d8c5a6]/20 ${className}`}>
-      {children}
-    </div>
-  );
-}
 
 const problemCards = [
   { icon: "spark" as IconName, title: "Not Sure Where to Start", copy: "Too much information. Not enough direction." },
@@ -129,7 +69,7 @@ const solutionCards = [
 ] as const;
 
 const bookTypes = [
-  ["Nonfiction Book", "Turn your knowledge, teaching, and experience into authority.", "book"],
+  ["Nonfiction Book", "Turn your knowledge, teach, and build authority.", "book"],
   ["Fiction Book", "Create memorable stories and engaging worlds.", "feather"],
   ["Memoir or Life Story", "Preserve your experiences and inspire others.", "heart"],
   ["Children's Book", "Spark imagination and nurture young minds.", "child"],
@@ -180,6 +120,14 @@ const controlCards = [
   ["Chapter-by-Chapter Control", "Work on one chapter at a time.", "list"],
 ] as const;
 
+const flowItems = [
+  ["Rough Idea", "A spark of inspiration.", "lightbulb"],
+  ["Notes", "Scattered thoughts and ideas.", "notes"],
+  ["Chapter Outline", "A clear structure for your book.", "list"],
+  ["Polished Chapters", "Well-written, refined content.", "draft"],
+  ["Finished PDF / DOCX", "A professional book ready to share.", "book"],
+] as const;
+
 const pricingRows = [
   ["10 pages", "$19", "$39"],
   ["50 pages", "$49", "$99"],
@@ -190,10 +138,10 @@ const pricingRows = [
 ];
 
 const sampleBooks = [
-  ["THE FOCUS EDGE", "Nonfiction", "from-[#111827] to-[#334155]"],
-  ["WHISPERS OF THE MOON", "Fiction", "from-[#0f172a] to-[#1e3a5f]"],
-  ["A Life Unfolded", "Memoir", "from-[#efe2d0] to-[#cda56e]"],
-  ["The Brave Little Star", "Children's", "from-[#1d4ed8] to-[#f4b642]"],
+  ["THE FOCUS EDGE", "How Clarity Creates Extraordinary Results", "DAVID LANGFORD", "Nonfiction", "from-[#111111] via-[#252525] to-[#050505]"],
+  ["WHISPERS OF THE MOON", "LILA HART", "", "Fiction", "from-[#0d1729] via-[#253553] to-[#111827]"],
+  ["A Life Unfolded", "Lessons, Choices, and the Road That Led Me Home", "ANNA REEVES", "Memoir", "from-[#efe2d0] via-[#f7eddf] to-[#c69a68]"],
+  ["The Brave Little Star", "", "", "Children's", "from-[#1f64a5] via-[#2b8bc1] to-[#f4b642]"],
 ];
 
 const faqs = [
@@ -208,81 +156,156 @@ const faqs = [
   "Can I upgrade later?",
 ];
 
+function Icon({ name, className = "" }: { name: IconName; className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      {iconPaths[name].map((path) => (
+        <path d={path} key={path} />
+      ))}
+    </svg>
+  );
+}
+
+function Logo({ compact = false }: { compact?: boolean }) {
+  return (
+    <Link href="/" className="flex items-center gap-2 text-[#0a2a4b]">
+      <Icon name="quill" className={`${compact ? "h-6 w-6" : "h-8 w-8"} text-[#c98214]`} />
+      <span className={`${compact ? "text-[21px]" : "text-[28px]"} font-black leading-none [font-family:Georgia,serif]`}>
+        BookForge
+      </span>
+    </Link>
+  );
+}
+
+function GoldButton({ href, children, className = "" }: { href: string; children: React.ReactNode; className?: string }) {
+  return (
+    <Link
+      href={href}
+      className={`inline-flex items-center justify-center rounded-md bg-[#c98214] px-5 py-3 text-sm font-black text-white shadow-md shadow-amber-900/20 transition hover:bg-[#a9670e] ${className}`}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function SecondaryButton({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center justify-center rounded-md border border-[#e2d4bd] bg-white px-7 py-3 text-sm font-black text-[#102b49] shadow-sm transition hover:border-[#c98214]"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-[27px] font-black leading-tight text-[#0d2a4a] [font-family:Georgia,serif]">{children}</h2>;
+}
+
+function Card({ children, className = "", id }: { children: React.ReactNode; className?: string; id?: string }) {
+  return (
+    <div id={id} className={`rounded-lg border border-[#e8ddca] bg-white p-4 shadow-sm shadow-[#d8c5a6]/25 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+function IconBubble({ icon, className = "" }: { icon: IconName; className?: string }) {
+  return (
+    <span className={`flex shrink-0 items-center justify-center rounded-full bg-[#f5deb7] text-[#0d2a4a] ${className || "h-16 w-16"}`}>
+      <Icon name={icon} className="h-8 w-8" />
+    </span>
+  );
+}
+
+function FeatureCard({ title, copy, icon }: { title: string; copy: string; icon: IconName }) {
+  return (
+    <Card className="min-h-[124px]">
+      <Icon name={icon} className="h-6 w-6 text-[#c98214]" />
+      <h3 className="mt-3 text-[15px] font-black leading-tight text-[#0d2a4a] [font-family:Georgia,serif]">{title}</h3>
+      <p className="mt-2 text-[12px] font-semibold leading-[1.45] text-[#243850]">{copy}</p>
+    </Card>
+  );
+}
+
+function Band({ children, id, className = "" }: { children: React.ReactNode; id?: string; className?: string }) {
+  return (
+    <section id={id} className="px-4 py-3 lg:px-6">
+      <div className={`bookforge-frame rounded-xl border border-[#efe2cf] bg-[#fffaf1] p-4 shadow-sm shadow-[#dfc9aa]/20 ${className}`}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#fbf7ef] text-[#0d2a4a]">
-      <header className="sticky top-0 z-50 border-b border-[#eadfcd] bg-[#fffaf0]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+    <main className="min-h-screen bg-[#fffaf2] text-[#0d2a4a]">
+      <header className="border-b border-[#e7d9c4] bg-[#fffdf8]">
+        <div className="bookforge-frame flex items-center justify-between py-3">
           <Logo />
-          <nav className="hidden items-center gap-9 text-sm font-black text-[#102b49] md:flex">
+          <nav className="hidden items-center gap-11 text-[13px] font-black text-[#102b49] md:flex">
             <Link href="#how-it-works">How It Works</Link>
             <Link href="#examples">Examples</Link>
             <Link href="#pricing">Pricing</Link>
             <Link href="#faq">FAQ</Link>
           </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="hidden text-sm font-black text-[#102b49] sm:inline-flex">
+          <div className="flex items-center gap-6">
+            <Link href="/login" className="hidden text-sm font-black text-[#102b49] sm:inline">
               Log In
             </Link>
-            <GoldButton href="/books/new">Start Free Book Preview</GoldButton>
+            <GoldButton href="/books/new" className="px-6 py-3">
+              Start Free Book Preview
+            </GoldButton>
           </div>
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-7xl gap-10 px-5 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:px-8 lg:py-16">
+      <section className="bookforge-frame bookforge-hero pb-8 pt-7">
         <div>
-          <h1 className="max-w-2xl text-5xl font-black leading-[1.02] tracking-tight text-[#0d2a4a] md:text-6xl">
+          <h1 className="max-w-[620px] text-[48px] font-black leading-[1.02] text-[#0a2a4b] [font-family:Georgia,serif] md:text-[55px] lg:text-[58px]">
             Turn Your Idea, Notes, or Draft Into a Finished Book
           </h1>
-          <p className="mt-5 max-w-xl text-lg font-medium leading-8 text-[#31445c]">
+          <p className="mt-5 max-w-[560px] text-[18px] font-medium leading-[1.45] text-[#102b49]">
             Plan, write, edit, format, and export your book with a guided step-by-step process.
           </p>
-          <div className="mt-7 flex flex-wrap gap-4">
-            <GoldButton href="/books/new">Start Your Free Book Preview</GoldButton>
+          <div className="mt-7 flex flex-wrap gap-5">
+            <GoldButton href="/books/new" className="min-w-[276px]">
+              Start Your Free Book Preview
+            </GoldButton>
             <SecondaryButton href="#examples">See Sample Books</SecondaryButton>
           </div>
-          <p className="mt-5 flex items-center gap-2 text-sm font-bold text-[#31445c]">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#c98214] text-white">
-              <Icon name="check" className="h-3 w-3" />
+          <p className="mt-6 flex items-center gap-3 text-sm font-black text-[#263b53]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#c98214] text-white">
+              <Icon name="shield" className="h-4 w-4" />
             </span>
             No blank page. No confusing prompts. No formatting headaches.
           </p>
         </div>
 
-        <div className="grid gap-4 rounded-2xl border border-[#eadfcd] bg-white/70 p-4 shadow-xl shadow-[#d8c5a6]/30 lg:grid-cols-[1fr_auto_1fr_auto_1.25fr]">
-          <MockColumn title="1. Your Inputs" items={[["Book Idea", "lightbulb"], ["Notes", "notes"], ["Research PDF", "pdf"], ["Draft Chapter", "draft"]]} />
-          <Arrow />
-          <MockColumn title="2. Book Plan" items={[["Book Concept", "target"], ["Title Ideas", "tag"], ["Chapter Outline", "list"], ["Sample Chapter", "sample"]]} />
-          <Arrow />
-          <div>
-            <p className="mb-3 text-center text-sm font-black">3. Finished Book</p>
-            <div className="grid grid-cols-[1fr_72px] gap-4">
-              <div className="flex min-h-64 flex-col justify-between rounded-lg bg-gradient-to-br from-[#102b49] to-[#071827] p-5 text-white shadow-2xl shadow-slate-900/25">
-                <div>
-                  <p className="text-2xl font-black leading-tight text-[#f7d38b]">BEYOND THE HORIZON</p>
-                  <p className="mt-3 text-xs uppercase tracking-[0.25em] text-white/70">A journey of purpose and possibility</p>
-                </div>
-                <p className="text-sm font-bold text-white/85">James Morgan</p>
-              </div>
-              <div className="grid gap-3">
-                <ExportTile label="Export PDF" badge="PDF" />
-                <ExportTile label="Export DOCX" badge="W" />
-              </div>
-            </div>
-          </div>
-        </div>
+        <HeroMockup />
       </section>
 
       <Band>
-        <div className="grid gap-5 lg:grid-cols-[1.1fr_3fr] lg:items-center">
+        <div className="bookforge-two-col items-center">
           <SectionTitle>Your Book Should Not Stay Stuck in Your Head, Notes, or Drafts</SectionTitle>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-3">
             {problemCards.map((card) => (
-              <Card className="flex items-center gap-4" key={card.title}>
-                <IconBadge icon={card.icon} />
+              <Card className="flex min-h-[104px] items-center gap-5" key={card.title}>
+                <IconBubble icon={card.icon} />
                 <div>
-                  <h3 className="font-black">{card.title}</h3>
-                  <p className="mt-1 text-sm font-medium text-[#31445c]">{card.copy}</p>
+                  <h3 className="text-[15px] font-black text-[#0d2a4a] [font-family:Georgia,serif]">{card.title}</h3>
+                  <p className="mt-1 text-[12px] font-semibold leading-[1.45] text-[#263b53]">{card.copy}</p>
                 </div>
               </Card>
             ))}
@@ -291,9 +314,9 @@ export default function Home() {
       </Band>
 
       <Band>
-        <div className="grid gap-5 lg:grid-cols-[1fr_4fr]">
+        <div className="bookforge-studio">
           <SectionTitle>A Guided Book Creation Studio</SectionTitle>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
             {solutionCards.map(([title, copy, icon]) => (
               <FeatureCard key={title} title={title} copy={copy} icon={icon as IconName} />
             ))}
@@ -302,32 +325,44 @@ export default function Home() {
       </Band>
 
       <Band>
-        <div className="grid gap-5 lg:grid-cols-[1fr_4fr]">
+        <div className="bookforge-studio items-center">
           <SectionTitle>Write Any Type of Book</SectionTitle>
           <div className="grid gap-4 md:grid-cols-4">
             {bookTypes.map(([title, copy, icon]) => (
-              <FeatureCard key={title} title={title} copy={copy} icon={icon as IconName} />
+              <Card className="flex min-h-[92px] items-center gap-4" key={title}>
+                <Icon name={icon as IconName} className={`h-12 w-12 shrink-0 ${title === "Memoir or Life Story" ? "fill-[#d83b2e] text-[#d83b2e]" : "text-[#0d2a4a]"}`} />
+                <div>
+                  <h3 className="text-[16px] font-black leading-tight text-[#0d2a4a] [font-family:Georgia,serif]">{title}</h3>
+                  <p className="mt-1 text-[12px] font-semibold leading-[1.45] text-[#263b53]">{copy}</p>
+                </div>
+              </Card>
             ))}
           </div>
         </div>
       </Band>
 
       <Band id="how-it-works">
-        <div className="grid gap-6 lg:grid-cols-[1fr_3fr_1.25fr]">
+        <div className="bookforge-works">
           <SectionTitle>How BookForge Works</SectionTitle>
           <div className="grid gap-3 md:grid-cols-5">
             {steps.map(([title, copy, icon], index) => (
-              <Card className="text-center" key={title}>
-                <div className="mx-auto mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#c98214] text-sm font-black text-white">{index + 1}</div>
-                <Icon name={icon as IconName} className="mx-auto h-7 w-7 text-[#0d2a4a]" />
-                <h3 className="mt-3 text-sm font-black">{title}</h3>
-                <p className="mt-2 text-xs font-medium leading-5 text-[#31445c]">{copy}</p>
-              </Card>
+              <div className="relative pt-3" key={title}>
+                <span className="absolute left-1/2 top-0 z-10 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full bg-[#c98214] text-xs font-black text-white">
+                  {index + 1}
+                </span>
+                <Card className="min-h-[172px] pt-8 text-center">
+                  <Icon name={icon as IconName} className="mx-auto h-8 w-8 text-[#0d2a4a]" />
+                  <h3 className="mt-3 text-[13px] font-black leading-tight text-[#0d2a4a] [font-family:Georgia,serif]">{title}</h3>
+                  <p className="mt-2 text-[11px] font-semibold leading-[1.45] text-[#263b53]">{copy}</p>
+                </Card>
+              </div>
             ))}
           </div>
-          <Card>
-            <h3 className="text-center text-xl font-black">See Your Book Plan Before You Pay</h3>
-            <div className="mt-4 grid grid-cols-2 gap-2 text-sm font-bold text-[#31445c]">
+          <Card className="min-h-[206px]">
+            <h3 className="text-center text-[20px] font-black leading-tight text-[#0d2a4a] [font-family:Georgia,serif]">
+              See Your Book Plan Before You Pay
+            </h3>
+            <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-[12px] font-black text-[#243850]">
               {previewItems.map((item) => (
                 <span className="flex items-center gap-2" key={item}>
                   <Icon name="check" className="h-4 w-4 text-[#c98214]" />
@@ -335,17 +370,20 @@ export default function Home() {
                 </span>
               ))}
             </div>
-            <GoldButton href="/books/new" className="mt-5 w-full">Get Your Free Book Plan</GoldButton>
+            <GoldButton href="/books/new" className="mt-4 w-full py-2.5">
+              Get Your Free Book Plan
+            </GoldButton>
           </Card>
         </div>
       </Band>
 
       <Band>
-        <div className="grid gap-5 lg:grid-cols-[1fr_4fr]">
+        <div className="bookforge-studio items-center">
           <SectionTitle>Any Genre. Any Style.</SectionTitle>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-5 xl:grid-cols-8">
             {chips.map((chip) => (
-              <span className="rounded-lg border border-[#eadfcd] bg-white px-4 py-2 text-sm font-bold text-[#31445c] shadow-sm" key={chip}>
+              <span className="flex min-h-[34px] items-center justify-center gap-2 rounded-md border border-[#e8ddca] bg-white px-3 text-[12px] font-black text-[#263b53] shadow-sm" key={chip}>
+                <Icon name="spark" className="h-4 w-4 text-[#c98214]" />
                 {chip}
               </span>
             ))}
@@ -354,65 +392,85 @@ export default function Home() {
       </Band>
 
       <Band>
-        <div className="grid gap-5 lg:grid-cols-[1fr_4fr]">
+        <div className="bookforge-studio items-center">
           <SectionTitle>You Stay in Control of the Book</SectionTitle>
           <div className="grid gap-4 md:grid-cols-4">
             {controlCards.map(([title, copy, icon]) => (
-              <FeatureCard key={title} title={title} copy={copy} icon={icon as IconName} />
-            ))}
-          </div>
-        </div>
-      </Band>
-
-      <Band>
-        <div className="grid gap-5 lg:grid-cols-[1fr_4fr]">
-          <SectionTitle>From Idea to Finished Book</SectionTitle>
-          <div className="grid gap-3 md:grid-cols-5">
-            {["Rough Idea", "Notes", "Chapter Outline", "Polished Chapters", "Finished PDF / DOCX"].map((item, index) => (
-              <Card className="text-center" key={item}>
-                <Icon name={["lightbulb", "notes", "list", "draft", "book"][index] as IconName} className="mx-auto h-8 w-8 text-[#c98214]" />
-                <p className="mt-3 text-sm font-black">{item}</p>
+              <Card className="flex min-h-[92px] items-center gap-4" key={title}>
+                <IconBubble icon={icon as IconName} className="h-14 w-14" />
+                <div>
+                  <h3 className="text-[15px] font-black leading-tight text-[#0d2a4a] [font-family:Georgia,serif]">{title}</h3>
+                  <p className="mt-1 text-[12px] font-semibold leading-[1.35] text-[#263b53]">{copy}</p>
+                </div>
               </Card>
             ))}
           </div>
         </div>
       </Band>
 
-      <section id="pricing" className="mx-auto grid max-w-7xl gap-6 px-5 py-6 lg:grid-cols-2 lg:px-8">
+      <Band>
+        <div className="bookforge-studio items-center">
+          <SectionTitle>From Idea to Finished Book</SectionTitle>
+          <div className="grid gap-3 md:grid-cols-5">
+            {flowItems.map(([title, copy, icon], index) => (
+              <div className="flex items-center gap-3" key={title}>
+                <Card className="flex min-h-[78px] flex-1 items-center gap-3">
+                  <Icon name={icon as IconName} className="h-9 w-9 shrink-0 text-[#c98214]" />
+                  <div>
+                    <h3 className="text-[13px] font-black leading-tight text-[#0d2a4a] [font-family:Georgia,serif]">{title}</h3>
+                    <p className="mt-1 text-[11px] font-semibold leading-[1.3] text-[#263b53]">{copy}</p>
+                  </div>
+                </Card>
+                {index < flowItems.length - 1 ? <span className="hidden text-2xl font-black text-[#c98214] xl:block">-</span> : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      </Band>
+
+      <section id="pricing" className="bookforge-frame bookforge-pricing-grid py-3">
         <Card>
-          <h2 className="text-center text-3xl font-black text-[#0d2a4a]">Simple Book Pricing</h2>
-          <div className="mt-5 overflow-hidden rounded-lg border border-[#d9c7aa]">
+          <h2 className="text-center text-[27px] font-black text-[#0d2a4a] [font-family:Georgia,serif]">Simple Book Pricing</h2>
+          <div className="mt-4 overflow-hidden rounded-md border border-[#d9c7aa]">
             <table className="w-full border-collapse bg-white text-center text-sm">
               <thead className="bg-[#0d2a4a] text-white">
                 <tr>
-                  <th className="p-3">Book Size</th>
-                  <th className="p-3">Without Images</th>
-                  <th className="p-3">With Images</th>
+                  <th className="border-r border-white/25 p-2">Book Size</th>
+                  <th className="border-r border-white/25 p-2">Without Images</th>
+                  <th className="p-2">With Images</th>
                 </tr>
               </thead>
               <tbody>
                 {pricingRows.map((row) => (
-                  <tr className="border-t border-[#eadfcd]" key={row[0]}>
-                    {row.map((cell) => <td className="p-3 font-bold" key={cell}>{cell}</td>)}
+                  <tr className="border-t border-[#e8ddca]" key={row[0]}>
+                    {row.map((cell) => (
+                      <td className="border-r border-[#e8ddca] px-3 py-2 font-bold last:border-r-0" key={cell}>
+                        {cell}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-sm font-medium text-[#31445c]">
+          <p className="mx-auto mt-3 max-w-[560px] text-center text-[13px] font-semibold leading-[1.4] text-[#263b53]">
             Nothing is unlimited. Each package includes clear limits for rewrites, image credits, uploads, and exports.
           </p>
         </Card>
 
         <Card id="examples">
-          <h2 className="text-center text-3xl font-black text-[#0d2a4a]">Sample Books</h2>
-          <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {sampleBooks.map(([title, label, gradient]) => (
-              <div key={title}>
-                <div className={`flex aspect-[2/3] items-center justify-center rounded-lg bg-gradient-to-br ${gradient} p-4 text-center text-xl font-black text-white shadow-lg`}>
-                  {title}
+          <h2 className="text-center text-[27px] font-black text-[#0d2a4a] [font-family:Georgia,serif]">Sample Books</h2>
+          <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {sampleBooks.map(([title, subtitle, author, label, gradient]) => (
+              <div className="rounded-lg bg-white p-2 shadow-sm" key={title}>
+                <div className={`flex aspect-[2/3] flex-col justify-between rounded-md bg-gradient-to-br ${gradient} p-5 text-center text-white shadow-lg`}>
+                  <p className="mt-4 text-[24px] font-black leading-tight tracking-wide text-[#f7d38b]">{title}</p>
+                  <div>
+                    {subtitle ? <p className="text-[10px] font-semibold leading-tight text-white/85">{subtitle}</p> : null}
+                    {author ? <p className="mt-3 text-[10px] font-black tracking-widest text-white/85">{author}</p> : null}
+                  </div>
                 </div>
-                <p className="mt-2 text-center text-sm font-bold">{label}</p>
+                <p className="mt-2 text-center text-sm font-bold text-[#263b53]">{label}</p>
               </div>
             ))}
           </div>
@@ -420,13 +478,13 @@ export default function Home() {
       </section>
 
       <Band id="faq">
-        <div className="grid gap-5 lg:grid-cols-[1fr_4fr]">
+        <div className="bookforge-studio">
           <SectionTitle>Frequently Asked Questions</SectionTitle>
           <div className="grid gap-3 md:grid-cols-3">
             {faqs.map((faq) => (
-              <details className="rounded-lg border border-[#eadfcd] bg-white px-4 py-3 text-sm font-black shadow-sm" key={faq}>
-                <summary>{faq}</summary>
-                <p className="mt-3 font-medium leading-6 text-[#31445c]">
+              <details className="rounded-md border border-[#e8ddca] bg-white px-4 py-2.5 text-[12px] font-black text-[#263b53] shadow-sm" key={faq}>
+                <summary className="cursor-pointer list-none">{faq}<span className="float-right">v</span></summary>
+                <p className="mt-3 font-semibold leading-5 text-[#4a5b6d]">
                   BookForge guides you through a structured book creation process while keeping you in control of the content.
                 </p>
               </details>
@@ -435,31 +493,39 @@ export default function Home() {
         </div>
       </Band>
 
-      <section className="px-5 pb-8 pt-5 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 rounded-2xl bg-[#0d2a4a] px-8 py-8 text-center text-white shadow-xl shadow-slate-900/20 md:flex-row md:text-left">
-          <div className="flex items-center gap-5">
-            <Icon name="quill" className="hidden h-14 w-14 text-[#f2bd5b] sm:block" />
+      <section className="px-4 pb-6 pt-5 lg:px-6">
+        <div className="bookforge-frame flex flex-col items-center justify-between gap-5 rounded-2xl bg-[#0d2a4a] px-10 py-6 text-center text-white shadow-xl shadow-slate-900/20 md:flex-row md:text-left">
+          <div className="flex items-center gap-7">
+            <Icon name="quill" className="hidden h-16 w-16 text-[#f2bd5b] sm:block" />
             <div>
-              <h2 className="text-3xl font-black text-[#f7d38b]">Your Book Is Closer to Finished Than You Think</h2>
-              <p className="mt-2 font-medium text-white/85">Stop overthinking. Start creating. Get your free book plan today.</p>
+              <h2 className="text-[29px] font-black text-[#f7d38b] [font-family:Georgia,serif]">Your Book Is Closer to Finished Than You Think</h2>
+              <p className="mt-1 text-[15px] font-medium text-white/90">Stop overthinking. Start creating. Get your free book plan today.</p>
             </div>
           </div>
           <div>
-            <GoldButton href="/books/new">Start Your Free Book Preview</GoldButton>
-            <p className="mt-2 text-center text-xs font-bold text-white/80">No credit card required.</p>
+            <GoldButton href="/books/new" className="min-w-[300px]">
+              Start Your Free Book Preview
+            </GoldButton>
+            <p className="mt-2 text-center text-xs font-black text-white/85">No credit card required.</p>
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-[#eadfcd] px-5 py-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 text-sm font-bold text-[#31445c] md:flex-row md:items-center md:justify-between">
-          <Logo />
-          <div className="flex flex-wrap gap-5">
-            {["How It Works", "Examples", "Pricing", "FAQ", "Blog", "Contact", "Privacy Policy", "Terms of Service"].map((link) => (
-              <Link href={link === "Privacy Policy" ? "/privacy" : link === "Terms of Service" ? "/terms" : `/#${link.toLowerCase().replaceAll(" ", "-")}`} key={link}>
-                {link}
-              </Link>
-            ))}
+      <footer className="px-4 pb-8 pt-3 lg:px-6">
+        <div className="bookforge-frame flex flex-col gap-5 text-[12px] font-bold text-[#6b7280] md:flex-row md:items-center md:justify-between">
+          <Logo compact />
+          <div className="flex flex-wrap items-center justify-center gap-10">
+            <Link href="#how-it-works">How It Works</Link>
+            <Link href="#examples">Examples</Link>
+            <Link href="#pricing">Pricing</Link>
+            <Link href="#faq">FAQ</Link>
+            <Link href="/blog">Blog</Link>
+            <Link href="/support">Contact</Link>
+          </div>
+          <p>© 2024 BookForge. All rights reserved.</p>
+          <div className="flex gap-8">
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Service</Link>
           </div>
         </div>
       </footer>
@@ -467,42 +533,61 @@ export default function Home() {
   );
 }
 
-function Band({ children, id }: { children: React.ReactNode; id?: string }) {
+function HeroMockup() {
   return (
-    <section id={id} className="px-5 py-3 lg:px-8">
-      <div className="mx-auto max-w-7xl rounded-2xl border border-[#eadfcd] bg-[#fffaf0]/80 p-5 shadow-sm shadow-[#d8c5a6]/20">
-        {children}
+    <div className="bookforge-hero-flow">
+      <MockColumn
+        title="1. Your Inputs"
+        items={[
+          ["Book Idea", "lightbulb"],
+          ["Notes", "notes"],
+          ["Research PDF", "pdf"],
+          ["Draft Chapter", "draft"],
+        ]}
+      />
+      <Arrow />
+      <MockColumn
+        title="2. Book Plan"
+        items={[
+          ["Book Concept", "target"],
+          ["Title Ideas", "tag"],
+          ["Chapter Outline", "list"],
+          ["Sample Chapter", "sample"],
+        ]}
+      />
+      <Arrow />
+      <div>
+        <p className="mb-4 text-center text-sm font-black text-[#0d2a4a]">3. Finished Book</p>
+        <div className="grid grid-cols-[210px_96px] gap-7">
+          <div className="relative mx-auto h-[286px] w-[186px] rounded-sm bg-gradient-to-br from-[#0b223c] via-[#163b61] to-[#081524] p-5 text-center text-white shadow-2xl shadow-slate-900/30">
+            <div className="absolute -right-2 top-2 h-[274px] w-3 rounded-r-sm bg-[#d5c4ad]" />
+            <div className="absolute -right-4 top-4 h-[266px] w-2 rounded-r-sm bg-[#f3eadb]" />
+            <div className="mt-5 h-20 rounded-full bg-[#f0bd64]/30 blur-lg" />
+            <p className="-mt-14 text-[26px] font-black leading-tight text-[#f8df9a]">BEYOND THE HORIZON</p>
+            <p className="mx-auto mt-4 max-w-[130px] text-[9px] font-semibold uppercase tracking-[0.14em] text-white/80">
+              A journey of purpose and possibility
+            </p>
+            <div className="mt-10 h-16 rounded-t-full bg-gradient-to-t from-[#071524] to-[#e8b25d]" />
+            <p className="mt-9 text-[12px] font-black tracking-[0.18em] text-[#f8df9a]">JAMES MORGAN</p>
+          </div>
+          <div className="grid content-center gap-5">
+            <ExportTile badge="PDF" label="Export PDF" tone="red" />
+            <ExportTile badge="W" label="Export DOCX" tone="blue" />
+          </div>
+        </div>
       </div>
-    </section>
-  );
-}
-
-function IconBadge({ icon }: { icon: IconName }) {
-  return (
-    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#f8ead2] text-[#c98214]">
-      <Icon name={icon} className="h-8 w-8" />
-    </span>
-  );
-}
-
-function FeatureCard({ title, copy, icon }: { title: string; copy: string; icon: IconName }) {
-  return (
-    <Card>
-      <Icon name={icon} className="h-7 w-7 text-[#c98214]" />
-      <h3 className="mt-3 font-black">{title}</h3>
-      <p className="mt-2 text-sm font-medium leading-6 text-[#31445c]">{copy}</p>
-    </Card>
+    </div>
   );
 }
 
 function MockColumn({ title, items }: { title: string; items: [string, string][] }) {
   return (
     <div>
-      <p className="mb-3 text-center text-sm font-black">{title}</p>
-      <div className="grid gap-3 rounded-xl bg-[#f7efe4] p-3">
+      <p className="mb-4 text-center text-sm font-black text-[#0d2a4a]">{title}</p>
+      <div className="grid gap-4 rounded-lg bg-[#f8efe3] p-3 shadow-sm shadow-[#d8c5a6]/20">
         {items.map(([label, icon]) => (
-          <div className="flex items-center gap-3 rounded-lg bg-white p-3 text-sm font-black shadow-sm" key={label}>
-            <Icon name={icon as IconName} className="h-5 w-5 text-[#c98214]" />
+          <div className="flex h-[64px] items-center gap-4 rounded-md bg-white px-4 text-sm font-black text-[#263b53] shadow-md shadow-[#d8c5a6]/25" key={label}>
+            <Icon name={icon as IconName} className="h-6 w-6 text-[#c98214]" />
             {label}
           </div>
         ))}
@@ -512,13 +597,19 @@ function MockColumn({ title, items }: { title: string; items: [string, string][]
 }
 
 function Arrow() {
-  return <div className="hidden h-10 w-10 items-center justify-center self-center rounded-full bg-[#c98214] text-xl font-black text-white lg:flex">-</div>;
+  return (
+    <div className="hidden h-11 w-11 items-center justify-center self-center rounded-full bg-[#c98214] text-2xl font-black text-white shadow-md shadow-amber-900/20 lg:flex">
+      &gt;
+    </div>
+  );
 }
 
-function ExportTile({ label, badge }: { label: string; badge: string }) {
+function ExportTile({ badge, label, tone }: { badge: string; label: string; tone: "red" | "blue" }) {
+  const badgeClass = tone === "red" ? "border-red-200 text-red-600" : "border-blue-200 bg-blue-600 text-white";
+
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-[#eadfcd] bg-white p-3 text-center text-xs font-black shadow-sm">
-      <span className="mb-2 rounded border border-[#eadfcd] px-2 py-1 text-[#c98214]">{badge}</span>
+    <div className="flex h-[110px] flex-col items-center justify-center rounded-lg border border-[#e8ddca] bg-white text-center text-[12px] font-black text-[#263b53] shadow-md shadow-[#d8c5a6]/25">
+      <span className={`mb-3 rounded border px-2 py-1 text-[20px] font-black ${badgeClass}`}>{badge}</span>
       {label}
     </div>
   );

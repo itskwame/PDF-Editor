@@ -27,3 +27,69 @@ body {
   background: #f7d38b;
   color: #0d2a4a;
 }
+
+.bookforge-frame {
+  width: min(calc(100% - 96px), 1420px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bookforge-hero {
+  display: grid;
+  grid-template-columns: minmax(430px, 0.78fr) minmax(690px, 1.22fr);
+  gap: 48px;
+  align-items: center;
+}
+
+.bookforge-two-col {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+}
+
+.bookforge-studio {
+  display: grid;
+  grid-template-columns: 245px 1fr;
+  gap: 22px;
+}
+
+.bookforge-works {
+  display: grid;
+  grid-template-columns: 205px 1fr 385px;
+  gap: 20px;
+}
+
+.bookforge-pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 18px;
+}
+
+.bookforge-hero-flow {
+  display: grid;
+  grid-template-columns: 170px 42px 170px 42px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 1180px) {
+  .bookforge-frame {
+    width: min(calc(100% - 48px), 1420px);
+  }
+
+  .bookforge-hero,
+  .bookforge-two-col,
+  .bookforge-studio,
+  .bookforge-works,
+  .bookforge-pricing-grid,
+  .bookforge-hero-flow {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .bookforge-frame {
+    width: min(calc(100% - 28px), 1420px);
+  }
+}
